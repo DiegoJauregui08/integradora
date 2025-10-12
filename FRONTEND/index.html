@@ -6,7 +6,7 @@
   <title>Login - Titanic</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="login-body">
   <div class="login-container">
     <!-- Imagen del logo -->
     <div class="logo">
@@ -23,5 +23,15 @@
   </div>
 
   <script src="js/main.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/serviceWorker.js')
+    .then(reg => console.log('Service Worker registrado:', reg.scope))
+    .catch(err => console.error('Error registrando SW:', err));
+}
+</script>
+
+
 </body>
 </html>

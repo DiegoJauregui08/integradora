@@ -10,23 +10,24 @@ async function seed() {
       useUnifiedTopology: true,
     });
 
-    // Borrar usuarios previos (opcional, para evitar duplicados)
-    await User.deleteMany({});
+    // Crear hash de la contraseña de capitan
+    const hashedPassword = await bcrypt.hash("capitan08", 10);
 
-    // Crear hash de la contraseña
-    const hashedPassword = await bcrypt.hash("123456", 10);
-
-    // Insertar usuario admin
-    const user = new User({
-      username: "diego",
-      password: hashedPassword,
-      role: "admin",
-    });
-
-    await user.save();
-    console.log("✅ Usuario creado con éxito:");
-    console.log("   Usuario: diego");
-    console.log("   Contraseña: 123456");
+    // Insertar usuario capitan si no existe
+    const existingUser = await User.findOne({ username: "capitan" });
+    if (!existingUser) {
+      const user = new User({
+        username: "capitan",
+        password: hashedPassword,
+        role: "user", // puedes cambiar el rol si quieres
+      });
+      await user.save();
+      console.log("✅ Usuario creado con éxito:");
+      console.log("   Usuario: capitan");
+      console.log("   Contraseña: capitan08");
+    } else {
+      console.log("⚠️ El usuario 'capitan' ya existe, no se creó de nuevo.");
+    }
 
     mongoose.connection.close();
   } catch (err) {

@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
 
+  if (!form) return;
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -20,8 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await response.json();
-      alert("✅ Login exitoso");
-      console.log(data);
+      console.log("Login exitoso:", data);
+
+      // 🔹 Redirigir al dashboard
+      window.location.href = "/dashboard.html";
     } catch (error) {
       console.error("Error:", error);
       alert("❌ Error al conectar con el servidor");

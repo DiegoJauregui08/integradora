@@ -1,0 +1,9 @@
+{
+  "name": "Titanic Dashboard",
+  "short_name": "Titanic",
+  "start_url": "/home.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#004080",
+  "description": "Sistema Titanic para monitoreo y análisis de datos en tiempo real."
+}

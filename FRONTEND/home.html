@@ -1,94 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Home - Titanic Energy</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #003366, #0055a5);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      text-align: center;
-    }
 
-    header {
-      padding: 2rem;
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    header h1 {
-      font-size: 2.2rem;
-      margin: 0;
-    }
-
-    header p {
-      font-size: 1.1rem;
-      color: #d0e0ff;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-    }
-
-    .home-content {
-      max-width: 700px;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-    }
-
-    .home-content h2 {
-      margin-bottom: 1rem;
-      color: #ffffff;
-    }
-
-    .home-content p {
-      font-size: 1rem;
-      color: #e0eaff;
-      line-height: 1.6;
-    }
-
-    .btn {
-      margin-top: 1.5rem;
-      padding: 12px 25px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s ease;
-    }
-
-    .btn-primary {
-      background: #ffffff;
-      color: #003366;
-    }
-
-    .btn-primary:hover {
-      background: #d0e0ff;
-    }
-
-    footer {
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.2);
-      color: #d0e0ff;
-      font-size: 0.9rem;
-    }
-  </style>
+  <link rel="stylesheet" href="css/styles.css" />
+  <meta name="theme-color" content="#004080" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 </head>
 <body>
+    <body class="home-body">
+
   <header>
     <h1>Titanic Energy ⚡🚢</h1>
     <p>Monitoreo y análisis del consumo energético marítimo</p>
@@ -98,31 +21,17 @@
     <div class="home-content">
       <h2>Bienvenido a la Plataforma Titanic Energy</h2>
       <p>
-        Esta plataforma digital te permite visualizar, analizar y optimizar el consumo energético 
+        Esta plataforma digital te permite visualizar, analizar y optimizar el consumo energético
         en embarcaciones mediante sensores IoT, gráficos dinámicos y alertas inteligentes.
-        <br><br>
-        Mejora la eficiencia operativa y contribuye a la sostenibilidad marítima.
       </p>
 
-     <button id="goLogin" class="btn btn-primary">Ir al Login</button>
-<script src="js/home.js"></script>
+      <button id="goLogin" class="btn btn-primary">Ir al Login</button>
     </div>
   </main>
 
-  <footer>
-    © 2025 Titanic Energy | Proyecto académico IoT
-  </footer>
-  <script src="js/home.js"></script>
-  <script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("/sw-home.js")
-        .then((reg) => console.log("✅ Service Worker registrado:", reg.scope))
-        .catch((err) => console.log("❌ Error al registrar SW:", err));
-    });
-  }
-</script>
+  <footer>© 2025 Titanic Energy | Proyecto académico IoT</footer>
 
+  <!-- solo estas dos referencias: no duplicadas, sin inline scripts -->
+  <script src="js/home.js"></script>
 </body>
 </html>

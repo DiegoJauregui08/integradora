@@ -1,14 +1,19 @@
 // serviceWorker.js - App Shell para Titanic (FRONTEND)
 /* Lista de archivos que forman el "App Shell" de tu dashboard */
 const APP_SHELL = [
-  "/",                    
+  "/",
   "/index.html",
+  "/home.html",
   "/dashboard.html",
   "/css/styles.css",
   "/js/main.js",
+  "/js/home.js",
+  "/js/register-sw.js",
   "/js/dashboard.js",
-  "/images/logo.jpg"
+  "/images/logo.jpg",
+  "/manifest.json"
 ];
+
 
 
 const CACHE_NAME = "titanic-appshell-v1";

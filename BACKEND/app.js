@@ -10,23 +10,42 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const protectedRoutes = require('./routes/protectedRoutes');
 
-// Conexión a la base de datos
+// 🔹 Conexión a la base de datos
 connectDB();
 
 const app = express();
 
-// 🛡️ Configurar Helmet con Content Security Policy personalizada
+// 🛡️ Configurar Helmet con CSP más permisiva para dashboards (Chart.js, CDN, etc.)
 app.use(
-  helmet.contentSecurityPolicy({
-    useDefaults: true,
-    directives: {
-      "default-src": ["'self'"],
-      "script-src": ["'self'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-      "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
-      "img-src": ["'self'", "data:", "https://cdn.jsdelivr.net"],
-      "font-src": ["'self'", "https://fonts.gstatic.com"],
-      "connect-src": ["'self'", "http://localhost:3000", "http://localhost:5500"],
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        "default-src": ["'self'"],
+        "script-src": [
+          "'self'",
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com",
+          "https://cdn.jsdelivr.net/npm/chart.js"
+        ],
+        "style-src": [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com",
+          "https://cdn.jsdelivr.net"
+        ],
+        "img-src": ["'self'", "data:", "https://cdn.jsdelivr.net"],
+        "font-src": ["'self'", "https://fonts.gstatic.com"],
+        "connect-src": [
+          "'self'",
+          "http://localhost:3000",
+          "http://localhost:5500",
+          "https://cdn.jsdelivr.net"
+        ],
+      },
     },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
 
@@ -73,12 +92,12 @@ app.use('/api/protected', protectedRoutes);
 // 🔹 Endpoint de prueba
 app.get('/', (req, res) => res.json({ message: 'Titanic backend OK' }));
 
-// 🔹 Servir dashboard.html como fallback (por si lo abres desde /dashboard)
+// 🔹 Servir dashboard.html como fallback
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../FRONTEND/dashboard.html'));
 });
 
-// Servidor activo
+// 🚀 Servidor activo
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log(`✅ Backend escuchando en http://localhost:${PORT}`)

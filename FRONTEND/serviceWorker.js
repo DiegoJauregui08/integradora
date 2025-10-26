@@ -1,83 +1,69 @@
-// serviceWorker.js - App Shell para Titanic (FRONTEND)
-/* Lista de archivos que forman el "App Shell" de tu dashboard */
+// service-worker.js
+const CACHE_NAME = "titanic-energy-v2";
+
 const APP_SHELL = [
   "/",
   "/index.html",
+  "/login.html",
   "/home.html",
   "/dashboard.html",
   "/css/styles.css",
-  "/js/main.js",
   "/js/home.js",
-  "/js/register-sw.js",
+  "/js/login.js",
   "/js/dashboard.js",
-  "/images/logo.jpg",
-  "/manifest.json"
+  "/js/register-sw.js",
+  "/manifest.json",
+  "/images/logo.png"
 ];
 
-
-
-const CACHE_NAME = "titanic-appshell-v1";
-
-/* Instalación: cachea los archivos del App Shell */
+//  INSTALACIÓN: cachear archivos del App Shell
 self.addEventListener("install", (event) => {
-  console.log("[SW] installing...");
+  console.log("[SW] Instalando y cacheando recursos...");
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(APP_SHELL);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
   );
   self.skipWaiting();
 });
 
-/* Activación: limpia caches antiguas si existen */
+//  ACTIVACIÓN: limpiar caches antiguos
 self.addEventListener("activate", (event) => {
-  console.log("[SW] activating...");
+  console.log("[SW] Activando...");
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      );
-    })
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+    )
   );
   self.clients.claim();
 });
 
-/* Estrategia de fetch:
-   - Si la petición es a /api/ -> pasa al network (no cache)
-   - Para archivos del App Shell -> cache-first (usamos cache)
-   - Para otros recursos -> network-first con fallback a cache
-*/
+// ✅ INTERCEPCIÓN DE SOLICITUDES
 self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  const url = new URL(req.url);
+  const { request } = event;
 
-  // No cachear llamadas API (backend)
-  if (url.pathname.startsWith("/api/")) {
-    event.respondWith(fetch(req).catch(() => new Response(null, { status: 503 })));
+  // Evitar cachear peticiones API
+  if (request.url.includes("/api/")) {
     return;
   }
 
-  // Cache first for app shell resources
   event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) {
-        return cached;
+    caches.match(request).then((cachedResponse) => {
+      // Si existe en caché → úsalo
+      if (cachedResponse) {
+        return cachedResponse;
       }
-      // network-first for others
-      return fetch(req)
-        .then((networkRes) => {
-          // optionally cache dynamic resources (careful with size)
-          return networkRes;
+
+      // Si no existe → busca en red y guarda dinámicamente
+      return fetch(request)
+        .then((networkResponse) => {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, networkResponse.clone());
+            return networkResponse;
+          });
         })
-        .catch(() => {
-          // fallback simple: if HTML page requested, serve cached index
-          if (req.headers.get("accept") && req.headers.get("accept").includes("text/html")) {
-            return caches.match("/index.html");
-          }
-          return new Response("Offline", { status: 503, statusText: "Offline" });
-        });
+        .catch(() =>
+          // Si falla (offline), intenta devolver el index.html o una respuesta por defecto
+          caches.match("/index.html")
+        );
     })
   );
 });

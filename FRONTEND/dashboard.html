@@ -93,35 +93,39 @@
   </header>
 
   <main>
-    <!-- Consumo en tiempo real -->
-    <div class="card">
-      <h2>⚡ Consumo en tiempo real</h2>
-      <canvas id="realtimeChart"></canvas>
+  <div class="card">
+    <h2>Voltaje actual</h2>
+    <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+      <div style="font-size: 36px; color:#003366;" id="voltaje-actual">-- V</div>
+      <div id="voltaje-fecha" style="color:#666;">(--)</div>
     </div>
+  </div>
 
-    <!-- Historial por trayecto -->
-    <div class="card">
-      <h2>📊 Historial por trayecto</h2>
-      <canvas id="historyChart"></canvas>
-    </div>
+  <div class="card">
+    <h2>Historial de voltaje (últimos registros)</h2>
+    <table style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr style="text-align:left; color:#003366;">
+          <th>Fecha / Hora</th>
+          <th>Voltaje (V)</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-historial"></tbody>
+    </table>
+  </div>
 
-    <!-- Información detallada -->
-    <div class="card">
-      <h2>ℹ️ Información detallada</h2>
-      <div class="info-text">
-        <p>Esta sección muestra alertas recientes y recomendaciones basadas en el monitoreo energético del sistema Titanic.</p>
-        <div class="alert-box">
-          <ul>
-            <li>⚡ <b>Sobrecarga detectada</b> en el sistema eléctrico de propulsión.</li>
-            <li>💡 Reemplaza focos halógenos por <b>LED</b> para reducir un 20% el consumo.</li>
-            <li>🌊 <b>Velocidad óptima</b> alcanzada: ahorro estimado del 12%.</li>
-            <li>🧭 Flotas monitoreadas: 12 | Eficiencia promedio: 91%.</li>
-            <li>✅ Sensores activos: 98% - Diagnóstico remoto estable.</li>
-          </ul>
-        </div>
-      </div>
+  <div class="card">
+    <h2>Gráfica de variaciones</h2>
+    <canvas id="voltajeChart" width="800" height="300"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>Recomendaciones</h2>
+    <div id="recomendaciones" class="info-text">
+      <!-- Se rellenará desde JS -->
     </div>
-  </main>
+  </div>
+</main>
 
   <script src="js/dashboard.js"></script>
 <script src="js/js/register-sw.js"></script>

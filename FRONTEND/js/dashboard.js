@@ -1,63 +1,114 @@
-// js/dashboard.js
+// FRONTEND/js/dashboard.js
+document.addEventListener('DOMContentLoaded', () => {
+  const voltajeEl = document.getElementById('voltaje-actual');
+  const fechaEl = document.getElementById('voltaje-fecha');
+  const tablaEl = document.getElementById('tabla-historial');
+  const recsEl = document.getElementById('recomendaciones');
+  const ctx = document.getElementById('voltajeChart').getContext('2d');
+  let chart = null;
 
-document.addEventListener("DOMContentLoaded", () => {
+  // Helper: formatea fecha ISO a local
+  function formatDate(iso) {
+    if (!iso) return '--';
+    const d = new Date(iso);
+    return d.toLocaleString();
+  }
 
-  // --- Gráfica de consumo en tiempo real ---
-  const realtimeCtx = document.getElementById("realtimeChart").getContext("2d");
-  new Chart(realtimeCtx, {
-    type: "line",
-    data: {
-      labels: ["00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00"],
-      datasets: [{
-        label: "Consumo (kWh)",
-        data: [120, 135, 160, 180, 150, 170, 140],
-        borderColor: "#005fa3",
-        backgroundColor: "rgba(0,95,163,0.1)",
-        fill: true,
-        tension: 0.3,
-        pointRadius: 4,
-        pointBackgroundColor: "#003366"
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: true },
-      },
-      scales: {
-        y: { beginAtZero: true }
+  // Muestra recomendación según valor
+  function getRecomendacion(valor) {
+    if (valor === null || valor === undefined) return "No hay datos para generar recomendaciones.";
+    if (valor > 240) return "⚠️ Voltaje alto — revisa picos o sobrecargas, revisa reguladores y baterías.";
+    if (valor < 210) return "⚠️ Voltaje bajo — posible caída de suministro o baterías descargadas. Revisa conexiones.";
+    return "✅ Voltaje estable — dentro del rango óptimo.";
+  }
+
+  async function cargarLatest() {
+    try {
+      const res = await fetch('/api/voltage/latest');
+      if (!res.ok) {
+        console.warn('No hay dato último', res.status);
+        voltajeEl.innerText = '-- V';
+        fechaEl.innerText = '';
+        return null;
       }
+      const data = await res.json();
+      // muestra
+      const valor = data.voltage ?? data.voltaje ?? data.value ?? null;
+      const ts = data.timestamp ?? data.createdAt ?? null;
+      voltajeEl.innerText = (valor !== null && valor !== undefined) ? `${valor} V` : '-- V';
+      fechaEl.innerText = ts ? `Última lectura: ${formatDate(ts)}` : '';
+      recsEl.innerText = getRecomendacion(valor);
+      return data;
+    } catch (err) {
+      console.error('Error cargarLatest', err);
+      return null;
     }
-  });
+  }
 
-  // --- Gráfica de historial por trayecto ---
-  const historyCtx = document.getElementById("historyChart").getContext("2d");
-  new Chart(historyCtx, {
-    type: "bar",
-    data: {
-      labels: ["Trayecto 1", "Trayecto 2", "Trayecto 3", "Trayecto 4", "Trayecto 5"],
-      datasets: [{
-        label: "Consumo total (kWh)",
-        data: [520, 480, 610, 550, 590],
-        backgroundColor: [
-          "#003366",
-          "#005fa3",
-          "#0074d9",
-          "#3399ff",
-          "#66b3ff"
-        ],
-        borderRadius: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-      },
-      scales: {
-        y: { beginAtZero: true }
+  async function cargarHistory(limit = 10) {
+    try {
+      const res = await fetch(`/api/voltage/history?limit=${limit}`);
+      if (!res.ok) return [];
+      const arr = await res.json();
+      // arr viene en orden descendente (más reciente primero) por cómo definimos la ruta
+      // Para la tabla queremos mostrar descendente; para la gráfica preferimos orden ascendente por tiempo
+      // tabla
+      tablaEl.innerHTML = '';
+      arr.forEach(item => {
+        const valor = item.voltage ?? item.voltaje ?? item.value ?? '--';
+        const ts = item.timestamp ?? item.createdAt ?? null;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${formatDate(ts)}</td><td>${valor}</td>`;
+        tablaEl.appendChild(tr);
+      });
+
+      // gráfica: datos en orden ascendente
+      const arrAsc = [...arr].reverse();
+      const labels = arrAsc.map(i => formatDate(i.timestamp ?? i.createdAt ?? ''));
+      const dataVals = arrAsc.map(i => i.voltage ?? i.voltaje ?? i.value ?? 0);
+
+      if (chart) {
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = dataVals;
+        chart.update();
+      } else {
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Voltaje (V)',
+              data: dataVals,
+              borderColor: '#005fa3',
+              backgroundColor: 'rgba(0,95,163,0.12)',
+              fill: true,
+              tension: 0.25,
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: false } }
+          }
+        });
       }
-    }
-  });
 
+      return arr;
+    } catch (err) {
+      console.error('Error cargarHistory', err);
+      return [];
+    }
+  }
+
+  // Inicial
+  async function init() {
+    await cargarLatest();
+    await cargarHistory(10);
+    // refrescar periódicamente
+    setInterval(async () => {
+      await cargarLatest();
+      await cargarHistory(10);
+    }, 5000); // cada 5s — ajusta si quieres más/menos
+  }
+
+  init();
 });

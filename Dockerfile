@@ -1,15 +1,22 @@
-FROM node:22-bullseye-slim
+# Imagen base
+FROM node:22-slim
 
-# Copia del backend
-WORKDIR /node/backend
-COPY /backend/package.json .
+# Carpeta base dentro del contenedor
+WORKDIR /node
+
+# Copia los package.json del backend
+COPY BACKEND/package*.json ./BACKEND/
+
+# Instala dependencias del backend
+WORKDIR /node/BACKEND
 RUN npm install
 
-# Copiar el proyecto completo
+# Copia el resto del proyecto
 WORKDIR /node
 COPY . .
 
-# Ejecución
-WORKDIR /node/backend
+# Vuelve al backend para ejecutar
+WORKDIR /node/BACKEND
+
 EXPOSE 3000
 CMD ["npm", "run", "dev"]

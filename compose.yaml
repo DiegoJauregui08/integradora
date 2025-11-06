@@ -1,11 +1,41 @@
 services:
+  # Backend de Node
   backend:
     build:
-      context: ./BACKEND
-      dockerfile: dockerfile
-    container_name: backend
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-node
     ports:
       - "3000:3000"
     volumes:
       - .:/node
     command: npm run dev
+    # Microservicio de Serial con python
+  arduino:
+    build:
+      context: ./arduinoserial
+      dockerfile: Dockerfile
+    container_name: arduinoserial
+    volumes:
+      - ./arduinosserial:./node/arduinoserial
+    environment:
+      - USB_PORT=COM3
+      - BACKEND_URL=http://backend:3000
+    command: python arduinoserial.py
+  
+  # Mongo database local
+  mongo:
+    image: mongo:7
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=titanic123x
+      - MONGO_INITDB_DATABASE=titanic
+
+volumes:
+  mongo_data:

@@ -1,11 +1,51 @@
 services:
+  # Backend de Node
   backend:
     build:
-      context: ./BACKEND
-      dockerfile: dockerfile
-    container_name: backend
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-node
     ports:
       - "3000:3000"
+      - "5500:5500"
     volumes:
-      - .:/node
+      - ./backend:/node/backend
+      - ./frontend:/node/frontend
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb+srv://diego:LeshuGA08@users.vlbqhcw.mongodb.net/titanic?retryWrites=true&w=majority&appName=users
+      - SESSION_SECRET=pon_un_secreto_muy_fuerte_aqui
+      - FRONTEND_URL=http://localhost:5500
+      - NODE_ENV=development
     command: npm run dev
+    # Microservicio de Serial con python
+  arduino:
+    build:
+      context: ./arduinoserial
+      dockerfile: Dockerfile
+    container_name: arduinoserial
+    volumes:
+      - ./arduinosserial:/python/arduinoserial
+    # devices:
+    # - /dev/ttyUSB0:/dev/ttyUSB0 # Ajustar aqui el usb
+    environment:
+      - USB_PORT=/dev/ttyUSB0
+      - BACKEND_URL=http://backend:3000
+    command: python arduinoserial.py
+  
+  # Mongo database local
+  mongo:
+    image: mongo:7
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=titanic123x
+      - MONGO_INITDB_DATABASE=titanic
+
+volumes:
+  mongo_data:

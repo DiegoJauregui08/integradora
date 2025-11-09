@@ -33,19 +33,19 @@ services:
       - BACKEND_URL=http://backend:3000
     command: python arduinoserial.py
   
-  # Mongo database local
-  mongo:
-    image: mongo:7
-    container_name: mongodb
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=titanic123x
-      - MONGO_INITDB_DATABASE=titanic
+# # Mongo database local
+#   mongo:
+#     image: mongo:7
+#     container_name: mongodb
+#     restart: unless-stopped
+#     ports:
+#       - "27017:27017"
+#     volumes:
+#       - mongo_data:/data/db
+#     environment:
+#       - MONGO_INITDB_ROOT_USERNAME=admin
+#       - MONGO_INITDB_ROOT_PASSWORD=titanic123x
+#       - MONGO_INITDB_DATABASE=titanic
 
-volumes:
-  mongo_data:
+# volumes:
+#   mongo_data:

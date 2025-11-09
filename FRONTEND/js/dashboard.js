@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function getRecomendacion(valor) {
     if (valor === null || valor === undefined) return "No hay datos para generar recomendaciones.";
     if (valor > 240) return "⚠️ Voltaje alto — revisa picos o sobrecargas, revisa reguladores y baterías.";
-    if (valor < 210) return "⚠️ Voltaje bajo — posible caída de suministro o baterías descargadas. Revisa conexiones.";
+    if (valor < 210) return "⚠️ Voltaje Normal - Todo está funcionando correctamente.";
     return "✅ Voltaje estable — dentro del rango óptimo.";
   }
 

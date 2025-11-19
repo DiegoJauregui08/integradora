@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://titanic-tf6q.onrender.com';
 const info = document.getElementById('user-info');
 const logoutBtn = document.getElementById('logout');
 

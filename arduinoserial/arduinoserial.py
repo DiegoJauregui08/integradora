@@ -18,7 +18,7 @@ collection = db["voltages"]
 print(f"Conectado a MongoDB: {MONGO_URI}, base de datos: {MONGO_DB}")
 
 # === Configuración Serial ===
-arduino = serial.Serial(port='COM6', baudrate=9600, timeout=2)
+arduino = serial.Serial(port='COM3', baudrate=9600, timeout=2)
 time.sleep(2)  # Espera que el puerto se estabilice
 
 print("Leyendo datos del PZEM004T...\n")
